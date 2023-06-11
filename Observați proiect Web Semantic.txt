@@ -1,0 +1,11 @@
+Observați proiect Web Semantic
+
+Am respectat cerințele proiectului. 
+1. În fișierul webScraping.php am realizat partea de preluare de date
+2. În fișierul serverGraphQL.php am realizat inserarea si preluarea de date de la server-ul JSON-GraphQL (am creat manual 3 înregistrări în fișierul dateinitiale.json)
+3. În fișierul serverRDF4J.php am realizat inserearea și preluarea de date de la server-ul RDF4J
+4. În fișierul stergereRDF4J.php am realizat ștergerea unei înregistrări din server-ul RDF4J
+5. În fișierul index.html am realizat partea de front-end
+
+Nu am realizat cerințele bonus.
+

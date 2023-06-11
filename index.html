@@ -1,0 +1,135 @@
+<html>
+  <head>
+    <title>Most Popular Movies</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="text/javascript">
+      function afisareDate() {
+        cerere = new XMLHttpRequest();
+        cerere.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("tabelDate").innerHTML = this.responseText;
+          }
+        };
+        cerere.open("GET", "webScraping.php", true);
+        cerere.send();
+      }
+
+      function trimiteGraphQL() {
+        adresa = "serverGraphQL.php";
+        var form = $("#formData").serializeArray();
+        var dateForm = form.map(function (item) {
+          return { key: item.name, value: item.value };
+        });
+
+        var dateTabel = [];
+        $("#tabelDate tr").each(function (rowIndex) {
+          var row = [];
+          $(this)
+            .find("td")
+            .each(function (cellIndex) {
+              var cellText = $(this).text();
+              if (cellIndex === 0) {
+                row.push({ key: "title", value: cellText });
+              } else if (cellIndex === 1) {
+                row.push({ key: "year", value: cellText });
+              }
+            });
+          dateTabel.push({ key: rowIndex, value: row });
+        });
+
+        dateTabel.push({ key: dateTabel.length, value: dateForm });
+
+        JSONdeTrimis = JSON.stringify(dateTabel);
+        configurari = {
+          url: adresa,
+          type: "POST",
+          data: JSONdeTrimis,
+          contentType: "application/json",
+          success: procesareRaspuns,
+        };
+        $.ajax(configurari);
+      }
+
+      function procesareRaspuns(raspuns) {
+        $("#tabelGraphQL").html(raspuns);
+      }
+
+      function trimiteRDF() {
+        adresa = "serverRDF4J.php";
+
+        var dateTabel = [];
+        $("#tabelGraphQL tr").each(function (rowIndex) {
+          var row = [];
+          $(this)
+            .find("td")
+            .each(function (cellIndex) {
+              var cellText = $(this).text();
+              if (cellIndex === 0) {
+                row.push({ key: "title", value: cellText });
+              } else if (cellIndex === 1) {
+                row.push({ key: "year", value: cellText });
+              }
+            });
+          dateTabel.push({ key: rowIndex, value: row });
+        });
+
+        console.log(dateTabel);
+
+        JSONdeTrimis = JSON.stringify(dateTabel);
+        $.ajax({
+          url: adresa,
+          type: "POST",
+          data: JSONdeTrimis,
+          contentType: "application/json",
+          success: function (raspuns) {
+            $("#tabelRDF").html(raspuns);
+          },
+        });
+      }
+
+      function trimiteGraphQLStergere() {
+        adresa = "stergereRDF4J.php";
+        formDeSters = new FormData($("#formDeleteData")[0]);
+        obiectRestructurat=Object.fromEntries(formDeSters)
+	      JSONdeTrimis=JSON.stringify(obiectRestructurat)
+	      configurari={url:adresa,
+				      type:"POST",
+				      data:JSONdeTrimis,
+				      contentType:"application/json",
+				      success:procesareRaspunsStergere}
+	      $.ajax(configurari)
+      }
+
+      function procesareRaspunsStergere(raspuns) {
+        $("#Stergere").html(raspuns);
+      }
+    </script>
+  </head>
+
+  <body>
+    <input type="button" onclick="afisareDate()" value="Afisare Date" /> <br/><br/>
+    <table id="tabelDate"></table> <br/>
+
+    <form id="formData">
+      <label for="title">Titlu:</label>
+      <input type="text" id="title" name="title" /><br /><br />
+      <label for="year">An:</label>
+      <input type="text" id="year" name="year" /><br /><br />
+    </form>
+
+    <input type="button" onclick="trimiteGraphQL()" value="TrimiteGraphQL" /> <br/>
+    <table id="tabelGraphQL"></table> <br/>
+
+    <input type="button" onclick="trimiteRDF()" value="Trimite la RDF" /> <br/><br/>
+    <table id="tabelRDF"></table> <br/>
+
+    <form id="formDeleteData">
+      <label for="title">Titlu de sters: </label>
+      <input type="text" id="titleToDelete" name="title">
+    </form>
+
+    <input type="button" onclick="trimiteGraphQLStergere()" value="Stergere" /> <br/> <br/>
+    <div id="Stergere"></div>
+  </body>
+</html>
